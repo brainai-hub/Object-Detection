@@ -38,7 +38,7 @@ def draw_boxes(frame, boxes):
 def run_object_detection(video_source, conf_threshold):
     core = ov.Core()
     device = "CPU"
-    model_path = "./models/
+    model_path = "./models/ssdlite_mobilenet_v2_fp16.xml"
     model = core.read_model(model=model_path)
     compiled_model = core.compile_model(model=model, device_name=device)
     input_layer = compiled_model.input(0)
