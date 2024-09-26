@@ -6,45 +6,7 @@ import io
 import time
 from pathlib import Path
 import collections
-from openvino.tools import mo
 import openvino as ov
-import notebook_utils as notebook_utils
-from openvino.tools.mo.front import tf as ov_tf_front
-
-# OpenVINO Object Detection Model
-def download_and_convert_model():
-    base_model_dir = Path("model")
-    model_name = "ssdlite_mobilenet_v2"
-    archive_name = Path(f"{model_name}_coco_2018_05_09.tar.gz")
-    model_url = f"https://storage.openvinotoolkit.org/repositories/open_model_zoo/public/2022.1/{model_name}/{archive_name}"
-
-    # Download the model
-    downloaded_model_path = base_model_dir / archive_name
-    if not downloaded_model_path.exists():
-        notebook_utils.download_file(model_url, downloaded_model_path.name, downloaded_model_path.parent)
-
-    # Unpack the model
-    tf_model_path = base_model_dir / archive_name.with_suffix("").stem / "frozen_inference_graph.pb"
-    if not tf_model_path.exists():
-        with tarfile.open(downloaded_model_path) as file:
-            file.extractall(base_model_dir)
-
-    precision = "FP16"
-    converted_model_path = Path("model") / f"{model_name}_{precision.lower()}.xml"
-
-    # Convert model to OpenVINO IR format
-    if not converted_model_path.exists():
-        trans_config_path = Path(ov_tf_front.__file__).parent / "ssd_v2_support.json"
-        ov_model = mo.convert_model(
-            tf_model_path,
-            compress_to_fp16=(precision == "FP16"),
-            transformations_config=trans_config_path,
-            tensorflow_object_detection_api_pipeline_config=tf_model_path.parent / "pipeline.config",
-            reverse_input_channels=True,
-        )
-        ov.save_model(ov_model, converted_model_path)
-
-    return converted_model_path
 
 # Function to process object detection results
 def process_results(frame, results, thresh=0.6):
