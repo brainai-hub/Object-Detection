@@ -76,6 +76,6 @@ input_file = None
 temporary_location = None
 
 # Video or Webcam Processing Section
-elif source_radio in ["WEBCAM"]:
+if source_radio in ["WEBCAM"]:
     if source_radio == "WEBCAM":
         run_object_detection(0, conf_threshold)
